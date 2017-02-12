@@ -35,7 +35,6 @@ var deactivatePins = function () {
 
 // Метод для показа диалога
 var showDialog = function () {
-  dialogClose.setAttribute('aria-pressed', false);
   dialog.style.display = 'block';
   dialog.setAttribute('aria-hidden', false);
   document.addEventListener('keydown', eventHandlerKeydownDialog);
@@ -43,7 +42,6 @@ var showDialog = function () {
 
 // Метод для скрытия диалога
 var hideDialog = function () {
-  dialogClose.setAttribute('aria-pressed', true);
   dialog.style.display = 'none';
   dialog.setAttribute('aria-hidden', true);
   document.removeEventListener('keydown', eventHandlerKeydownDialog);
