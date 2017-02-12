@@ -49,11 +49,6 @@ var hideDialog = function () {
   document.removeEventListener('keydown', eventHandlerKeydownDialog);
 };
 
-// Проверяем нажатие по ENTER
-function isActivateEvent(event) {
-  return event.keyCode === ENTER_KEY_CODE;
-}
-
 // Обработчик события на нажатие ESC
 function eventHandlerKeydownDialog(event) {
   if (event.keyCode === ESCAPE_KEY_CODE) {
@@ -79,6 +74,16 @@ var pinsMapEventHandler = function (event) {
       return;
     }
     target = target.parentNode;
+  }
+};
+
+var pinsMapKeyDownEventHandler = function (event) {
+  switch (event.keyCode) {
+    case ENTER_KEY_CODE:
+      pinsMapEventHandler(event);
+      break;
+    default:
+      break;
   }
 };
 
@@ -152,10 +157,6 @@ noticeCapacity.addEventListener('change', capacitySync);
 
 // Добавляем обработчики для действий с pins
 pinsMap.addEventListener('click', pinsMapEventHandler);
-pinsMap.addEventListener('keydown', function (event) {
-  if (isActivateEvent(event)) {
-    pinsMapEventHandler(event);
-  }
-});
+pinsMap.addEventListener('keydown', pinsMapKeyDownEventHandler);
 
 dialogClose.addEventListener('click', dialogCloseEventHandler);
