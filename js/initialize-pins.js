@@ -1,6 +1,6 @@
 'use strict';
 
-window.initializePins = function () {
+window.initializePins = (function () {
   var pinsMap = document.querySelector('.tokyo__pin-map');
   var pins = document.querySelectorAll('.pin');
   var dialog = document.querySelector('.dialog');
@@ -81,4 +81,4 @@ window.initializePins = function () {
   pinsMap.addEventListener('keydown', pinsMapKeyDownEventHandler);
 
   dialogClose.addEventListener('click', dialogCloseEventHandler);
-};
+})();
