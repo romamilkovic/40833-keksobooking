@@ -29,6 +29,9 @@ window.form = (function () {
 
   setupFormValidation();
 
+  // Инициализируем модуль для работы с pins
+  window.initializePins();
+
   window.synchronizeFields(noticeRoomNumber, noticeCapacity, roomNumberValues, capacityValues, 'value');
   window.synchronizeFields(noticeTime, noticeTimeOut, timeValues, timeValues, 'value');
   window.synchronizeFields(noticeType, noticePrice, priceValues, priceValues, 'min');
