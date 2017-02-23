@@ -1,17 +1,10 @@
 'use strict';
 
 window.synchronizeFields = (function () {
-
-  return function (field1, field2, array1, array2, prop) {
-
+  return function (field1, field2, array1, array2, callback) {
     field1.addEventListener('change', function () {
-      var indexOfValue = array1.indexOf(field1.value);
-      field2[prop] = array2[indexOfValue];
-    });
-
-    field2.addEventListener('change', function () {
-      var indexOfValue = array2.indexOf(field2.value);
-      field1[prop] = array1[indexOfValue];
+      var index = array1.indexOf(field1.value);
+      callback(field2, array2[index]);
     });
   };
 })();

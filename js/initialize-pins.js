@@ -1,14 +1,11 @@
+
 'use strict';
 
 window.initializePins = (function () {
-
   return function () {
     var pinsMap = document.querySelector('.tokyo__pin-map');
     var pins = document.querySelectorAll('.pin');
-    var dialog = document.querySelector('.dialog');
-    var dialogClose = dialog.querySelector('.dialog__close');
-    var ESCAPE_KEY_CODE = 27;
-    var ENTER_KEY_CODE = 13;
+    var highlightedPin = document.querySelector('.pin--active');
 
     // Добавляем активный класс к пину
     var highlightPin = function (pin) {
@@ -25,42 +22,32 @@ window.initializePins = (function () {
       }
     };
 
-    // Метод для показа диалога
-    var showDialog = function () {
-      dialog.style.display = 'block';
-      dialog.setAttribute('aria-hidden', false);
-      document.addEventListener('keydown', eventHandlerKeydownDialog);
-    };
 
-    // Метод для скрытия диалога
-    var hideDialog = function () {
-      dialog.style.display = 'none';
-      dialog.setAttribute('aria-hidden', true);
-      document.removeEventListener('keydown', eventHandlerKeydownDialog);
-    };
-
-    // Обработчик события на нажатие ESC
-    function eventHandlerKeydownDialog(event) {
-      if (event.keyCode === ESCAPE_KEY_CODE) {
-        deactivatePins();
-        hideDialog();
-      }
+    // Восстанавливаем фокус
+    function restorePinFocus(pin) {
+      pin.focus();
     }
 
-    var dialogCloseEventHandler = function () {
-      deactivatePins();
-      hideDialog();
-    };
+    // Убираем активный класс у pin, если диал. окно было открыто с клавиатуры, то при закрытии
+    // возвращаем фокус на pin
+    function closeDialogHandler(pin, openFromKeyboard) {
+      return function () {
+        deactivatePins();
+        if (openFromKeyboard) {
+          restorePinFocus(pin);
+        }
+      };
+    }
 
     // Работаем с pins с помощью делегирования
     // цикл двигается вверх от target до .tokyo__pin-map
     // затем находим нужный нам элемент с помощью метода contains.
-    var pinsMapEventHandler = function (event) {
+    var pinsMapHandler = function (event, openFromKeyboard) {
       var target = event.target;
       while (target !== pinsMap) {
         if (target.classList.contains('pin')) {
           deactivatePins();
-          showDialog();
+          window.showCard(closeDialogHandler(target, openFromKeyboard));
           highlightPin(target);
           return;
         }
@@ -68,20 +55,20 @@ window.initializePins = (function () {
       }
     };
 
-    var pinsMapKeyDownEventHandler = function (event) {
-      switch (event.keyCode) {
-        case ENTER_KEY_CODE:
-          pinsMapEventHandler(event);
-          break;
-        default:
-          break;
+    // Ловим событие на enter
+    var pinsMapKeyDownHandler = function (event) {
+      if (window.utils.isKeyEnter(event)) {
+        pinsMapHandler(event, true);
       }
     };
 
-    // Добавляем обработчики для действий с pins
-    pinsMap.addEventListener('click', pinsMapEventHandler);
-    pinsMap.addEventListener('keydown', pinsMapKeyDownEventHandler);
+    // Если pin изначально активный, то вешаем на него обработчик
+    if (highlightedPin) {
+      window.showCard(closeDialogHandler(highlightedPin));
+    }
 
-    dialogClose.addEventListener('click', dialogCloseEventHandler);
+    // Добавляем обработчики для действий с pins
+    pinsMap.addEventListener('click', pinsMapHandler);
+    pinsMap.addEventListener('keydown', pinsMapKeyDownHandler);
   };
 })();
