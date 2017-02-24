@@ -17,7 +17,7 @@ window.showCard = (function () {
       document.removeEventListener('keydown', closeKeydownHandler);
       dialogClose.removeEventListener('click', closeClickDialogHandler);
 
-      if (window.isFunction(onCloseCallback)) {
+      if (window.utils.isFunction(onCloseCallback)) {
         onCloseCallback();
       }
     };
