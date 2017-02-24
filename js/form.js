@@ -48,7 +48,7 @@ window.form = (function () {
   window.initializePins();
 
   window.synchronizeFields(checkInTime, checkOutTime, availableCheckInTime, availableCheckOutTime, syncValue);
-  window.synchronizeFields(checkInTime, checkOutTime, availableCheckOutTime, availableCheckInTime, syncValue);
+  window.synchronizeFields(checkOutTime, checkInTime, availableCheckOutTime, availableCheckInTime, syncValue);
 
   window.synchronizeFields(roomNumber, capacity, roomNumbers, roomCapacity, syncValue);
   window.synchronizeFields(capacity, roomNumber, roomCapacity, roomNumbers, syncValue);
