@@ -6,6 +6,8 @@ window.initializePins = (function () {
     var pinsMap = document.querySelector('.tokyo__pin-map');
     var pins = document.querySelectorAll('.pin');
     var highlightedPin = document.querySelector('.pin--active');
+    var dataUrl = 'https://intensive-javascript-server-pedmyactpq.now.sh/keksobooking/data';
+    var similarApartments = [];
 
     // Добавляем активный класс к пину
     var highlightPin = function (pin) {
@@ -66,6 +68,26 @@ window.initializePins = (function () {
     if (highlightedPin) {
       window.showCard(closeDialogHandler(highlightedPin));
     }
+
+    // Создаем функцию callback, создаем новый объект с данными из первых трех элементов,
+    // создаем новый fragment и добавляем в DOM каждый из этих элементов
+    var onLoad = function (data) {
+      similarApartments = data;
+      var fragment = document.createDocumentFragment();
+      var dialogFragment = document.createDocumentFragment();
+      var slicedSimilarApartments = similarApartments.slice(0, 3);
+
+      slicedSimilarApartments.forEach(function (element, index) {
+        fragment.appendChild(window.createPin(element, index));
+        dialogFragment.appendChild(window.createDialog(element, index));
+      });
+
+      pinsMap.appendChild(fragment);
+      pinsMap.appendChild(dialogFragment);
+
+    };
+
+    window.load(dataUrl, onLoad);
 
     // Добавляем обработчики для действий с pins
     pinsMap.addEventListener('click', pinsMapHandler);
