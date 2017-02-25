@@ -1,9 +1,16 @@
 'use strict';
 
 window.showCard = (function () {
-  var dialog = document.querySelector('.dialog');
-  var featuresContainer = dialog.querySelector('.lodge__features');
-  var dialogClose = document.querySelector('.dialog__close');
+  //
+  var sectionTokyo = document.querySelector('.tokyo');
+  var dialogTemplate = document.querySelector('#dialog-template');
+  var dialogToClone = dialogTemplate.content.querySelector('.dialog');
+  var newDialogElement = dialogToClone.cloneNode(true);
+  //
+
+  // var dialog = document.querySelector('.dialog');
+  var featuresContainer = newDialogElement.querySelector('.lodge__features');
+  var dialogClose = newDialogElement.querySelector('.dialog__close');
   var dialogCloseHandler;
 
   var renderFeatures = function (features) {
@@ -17,7 +24,7 @@ window.showCard = (function () {
   };
 
   var renderPhotos = function (photos) {
-    var photosContainer = dialog.querySelector('.lodge__photos');
+    var photosContainer = newDialogElement.querySelector('.lodge__photos');
     photosContainer.innerHTML = '';
     var photoWidth = 52;
     var photoHeight = 42;
@@ -32,21 +39,23 @@ window.showCard = (function () {
   };
 
   var renderDialog = function (data) {
-    dialog.querySelector('.dialog__title img').src = data.author.avatar;
-    dialog.querySelector('.lodge__title').textContent = data.offer.title;
-    dialog.querySelector('.lodge__address').textContent = data.offer.address;
-    dialog.querySelector('.lodge__price').textContent = data.offer.price + '₽/ночь';
-    dialog.querySelector('.lodge__type').textContent = data.offer.type[data.offer.type];
-    dialog.querySelector('.lodge__rooms-and-guests').textContent = data.offer.rooms + ' комнат для ' + data.offer.rooms + ' гостей';
-    dialog.querySelector('.lodge__checkin-time').textContent = 'Заед после ' + data.offer.checkin + ' выезд до ' + data.offer.checkout;
-    dialog.querySelector('.lodge__description').textContent = data.offer.description;
+    newDialogElement.querySelector('.dialog__title img').src = data.author.avatar;
+    newDialogElement.querySelector('.lodge__title').textContent = data.offer.title;
+    newDialogElement.querySelector('.lodge__address').textContent = data.offer.address;
+    newDialogElement.querySelector('.lodge__price').textContent = data.offer.price + '₽/ночь';
+    newDialogElement.querySelector('.lodge__type').textContent = data.offer.type[data.offer.type];
+    newDialogElement.querySelector('.lodge__rooms-and-guests').textContent = data.offer.rooms + ' комнат для ' + data.offer.rooms + ' гостей';
+    newDialogElement.querySelector('.lodge__checkin-time').textContent = 'Заед после ' + data.offer.checkin + ' выезд до ' + data.offer.checkout;
+    newDialogElement.querySelector('.lodge__description').textContent = data.offer.description;
     renderPhotos(data.offer.photos);
     renderFeatures(data.offer.features);
+
+    sectionTokyo.appendChild(newDialogElement);
   };
 
   var closeDialog = function (event) {
-    dialog.style.display = 'none';
-    dialog.setAttribute('aria-hidden', true);
+    newDialogElement.style.display = 'none';
+    newDialogElement.setAttribute('aria-hidden', true);
 
     if (window.utils.isFunction(dialogCloseHandler)) {
       dialogCloseHandler();
@@ -79,8 +88,8 @@ window.showCard = (function () {
   dialogClose.addEventListener('keydown', dialogCloseOnEnterEventListener);
 
   return function (callback, data) {
-    dialog.style.display = 'block';
-    dialog.setAttribute('aria-hidden', false);
+    newDialogElement.style.display = 'block';
+    newDialogElement.setAttribute('aria-hidden', false);
 
     dialogCloseHandler = callback;
 
