@@ -82,7 +82,7 @@ window.initializePins = (function () {
     var renderPins = function (data) {
       data.forEach(function (element, i) {
         var renderedPin = createPin(element, i);
-        pinsMap.appendChild(renderedPin); // вставка пина в указанное место в DOM
+        pinsMap.appendChild(renderedPin);
       });
     };
 
