@@ -1,11 +1,11 @@
-
 'use strict';
 
 window.initializePins = (function () {
   return function () {
     var pinsMap = document.querySelector('.tokyo__pin-map');
-    var pins = document.querySelectorAll('.pin');
-    var highlightedPin = document.querySelector('.pin--active');
+    var pinClicked;
+    var URL = 'https://intensive-javascript-server-pedmyactpq.now.sh/keksobooking/data';
+    var dataFromServer = [];
 
     // Добавляем активный класс к пину
     var highlightPin = function (pin) {
@@ -15,6 +15,7 @@ window.initializePins = (function () {
 
     // Проверяем наличие активного pin и убираем его если есть
     var deactivatePins = function () {
+      var pins = document.querySelectorAll('.pin');
       for (var i = 0; i < pins.length; i++) {
         var pin = pins[i];
         pin.classList.remove('pin--active');
@@ -22,53 +23,77 @@ window.initializePins = (function () {
       }
     };
 
+    var openDialogHandler = function (event, element) {
+      deactivatePins();
+      var openFromKeyboard = typeof event.keyCode !== 'undefined';
 
-    // Восстанавливаем фокус
-    function restorePinFocus(pin) {
-      pin.focus();
-    }
+      pinClicked = event.target.closest('.pin');
 
-    // Убираем активный класс у pin, если диал. окно было открыто с клавиатуры, то при закрытии
-    // возвращаем фокус на pin
-    function closeDialogHandler(pin, openFromKeyboard) {
+      if (pinClicked) {
+        highlightPin(pinClicked);
+      }
+
+      window.showCard(closeDialogHandler(openFromKeyboard), element);
+    };
+
+    // Закрываем окно, очищаем активные pins и возвращаем focus
+    var closeDialogHandler = function (openFromKeyboard) {
       return function () {
         deactivatePins();
         if (openFromKeyboard) {
-          restorePinFocus(pin);
+          pinClicked.focus();
         }
       };
-    }
-
-    // Работаем с pins с помощью делегирования
-    // цикл двигается вверх от target до .tokyo__pin-map
-    // затем находим нужный нам элемент с помощью метода contains.
-    var pinsMapHandler = function (event, openFromKeyboard) {
-      var target = event.target;
-      while (target !== pinsMap) {
-        if (target.classList.contains('pin')) {
-          deactivatePins();
-          window.showCard(closeDialogHandler(target, openFromKeyboard));
-          highlightPin(target);
-          return;
-        }
-        target = target.parentNode;
-      }
     };
 
-    // Ловим событие на enter
-    var pinsMapKeyDownHandler = function (event) {
-      if (window.utils.isKeyEnter(event)) {
-        pinsMapHandler(event, true);
-      }
+    var createPin = (function () {
+      var pinTemplate = document.querySelector('#pin-template');
+      var pinToClone = pinTemplate.content.querySelector('.pin');
+      var pinWidth = 56;
+      var pinHeight = 75;
+
+      return function (element, index) {
+        var pinNew = pinToClone.cloneNode(true);
+        var pinImg = pinNew.querySelector('img');
+
+        // Для точного местоположение используем высоту/ширину pin
+        pinNew.style.top = (element.location.y - pinHeight) + 'px';
+        pinNew.style.left = (pinWidth / 2 + element.location.x) + 'px';
+
+        // Внутри pin ранее нашли картинку, теперь задаем ей src и addEventListener
+        pinImg.src = element.author.avatar;
+        pinImg.alt = 'User Avatar';
+
+        pinNew.addEventListener('click', function (event) {
+          openDialogHandler(event, element);
+        });
+
+        pinNew.addEventListener('keydown', function (event) {
+          if (window.utils.isKeyEnter(event)) {
+            openDialogHandler(event, element);
+          }
+        });
+
+        return pinNew;
+      };
+    })();
+
+    // Рендерим pins
+    var renderPins = function (data) {
+      data.forEach(function (element, i) {
+        var renderedPin = createPin(element, i);
+        pinsMap.appendChild(renderedPin);
+      });
     };
 
-    // Если pin изначально активный, то вешаем на него обработчик
-    if (highlightedPin) {
-      window.showCard(closeDialogHandler(highlightedPin));
-    }
+    // Грузим данные, отрисовываем pins
+    var onLoad = function (data) {
+      dataFromServer = data;
+      var initialData = dataFromServer.slice(0, 3);
 
-    // Добавляем обработчики для действий с pins
-    pinsMap.addEventListener('click', pinsMapHandler);
-    pinsMap.addEventListener('keydown', pinsMapKeyDownHandler);
+      renderPins(initialData);
+    };
+
+    window.load(URL, onLoad);
   };
 })();
