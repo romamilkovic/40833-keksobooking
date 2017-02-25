@@ -2,11 +2,10 @@
 
 window.initializePins = (function () {
   return function () {
-
     var pinsMap = document.querySelector('.tokyo__pin-map');
     var pinClicked;
     var URL = 'https://intensive-javascript-server-pedmyactpq.now.sh/keksobooking/data';
-    // var similarApartments = [];
+    var dataFromServer = [];
 
     // Добавляем активный класс к пину
     var highlightPin = function (pin) {
@@ -24,20 +23,27 @@ window.initializePins = (function () {
       }
     };
 
-    var openDialogHandler = function (event) {
+    var openDialogHandler = function (event, element) {
       deactivatePins();
+      var openFromKeyboard = typeof event.keyCode !== 'undefined';
 
       pinClicked = event.target.closest('.pin');
 
       if (pinClicked) {
         highlightPin(pinClicked);
       }
+
+      window.showCard(closeDialogHandler(openFromKeyboard), element);
     };
 
     // Закрываем окно, очищаем активные pins и возвращаем focus
-    var closeDialogHandler = function (pin, openFromKeyboard) {
-      deactivatePins();
-      pinClicked.focus();
+    var closeDialogHandler = function (openFromKeyboard) {
+      return function () {
+        deactivatePins();
+        if (openFromKeyboard) {
+          pinClicked.focus();
+        }
+      };
     };
 
     var createPin = (function () {
@@ -59,14 +65,12 @@ window.initializePins = (function () {
         pinImg.alt = 'User Avatar';
 
         pinNew.addEventListener('click', function (event) {
-          openDialogHandler(event);
-          window.showCard(closeDialogHandler, element);
+          openDialogHandler(event, element);
         });
 
         pinNew.addEventListener('keydown', function (event) {
           if (window.utils.isKeyEnter(event)) {
-            openDialogHandler(event);
-            window.showCard(closeDialogHandler, element);
+            openDialogHandler(event, element);
           }
         });
 
@@ -74,85 +78,22 @@ window.initializePins = (function () {
       };
     })();
 
-    // Восстанавливаем фокус
-    // var restorePinFocus = function (pin) {
-    //   pin.focus();
-    // };
-
-    // Убираем активный класс у pin, если диал. окно было открыто с клавиатуры, то при закрытии
-    // возвращаем фокус на pin
-    // var closeDialogHandler = function (pin, openFromKeyboard) {
-    //   return function () {
-    //     deactivatePins();
-    //     if (openFromKeyboard) {
-    //       restorePinFocus(pin);
-    //     }
-    //   };
-    // };
-
     // Рендерим pins
     var renderPins = function (data) {
-      data = data.slice(0, 3); // берем только первые три квартиры
-
       data.forEach(function (element, i) {
         var renderedPin = createPin(element, i);
         pinsMap.appendChild(renderedPin); // вставка пина в указанное место в DOM
       });
     };
 
-    // Работаем с pins с помощью делегирования
-    // цикл двигается вверх от target до .tokyo__pin-map
-    // затем находим нужный нам элемент с помощью метода contains.
-    // var pinsMapHandler = function (event, openFromKeyboard) {
-    //   var target = event.target;
-    //   while (target !== pinsMap) {
-    //     if (target.classList.contains('pin')) {
-    //       deactivatePins();
-    //       window.showCard(closeDialogHandler(target, openFromKeyboard));
-    //       highlightPin(target);
-    //       return;
-    //     }
-    //     target = target.parentNode;
-    //   }
-    // };
-
-    // Ловим событие на enter
-    // var pinsMapKeyDownHandler = function (event) {
-    //   if (window.utils.isKeyEnter(event)) {
-    //     pinsMapHandler(event, true);
-    //   }
-    // };
-
-    // Если pin изначально активный, то вешаем на него обработчик
-    // if (highlightedPin) {
-    //   window.showCard(closeDialogHandler(highlightedPin));
-    // }
-
-    // Создаем функцию callback, создаем новый объект с данными из первых трех элементов,
-    // создаем новый fragment и добавляем в DOM каждый из этих элементов
-    // var onLoad = function (data) {
-    //   similarApartments = data;
-    //   var fragment = document.createDocumentFragment();
-    //   var slicedSimilarApartments = similarApartments.slice(0, 3);
-    //
-    //   slicedSimilarApartments.forEach(function (element, index) {
-    //     fragment.appendChild(window.createPin(element, index));
-    //   });
-    //
-    //   pinsMap.appendChild(fragment);
-    // };
-    //
-    // window.load(URL, onLoad);
-
     // Грузим данные, отрисовываем pins
     var onLoad = function (data) {
-      renderPins(data);
+      dataFromServer = data;
+      var initialData = dataFromServer.slice(0, 3);
+
+      renderPins(initialData);
     };
 
     window.load(URL, onLoad);
-
-    // Добавляем обработчики для действий с pins
-    // pinsMap.addEventListener('click', pinsMapHandler);
-    // pinsMap.addEventListener('keydown', pinsMapKeyDownHandler);
   };
 })();

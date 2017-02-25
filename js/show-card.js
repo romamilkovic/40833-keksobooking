@@ -1,14 +1,10 @@
 'use strict';
 
 window.showCard = (function () {
-  //
   var sectionTokyo = document.querySelector('.tokyo');
   var dialogTemplate = document.querySelector('#dialog-template');
   var dialogToClone = dialogTemplate.content.querySelector('.dialog');
   var newDialogElement = dialogToClone.cloneNode(true);
-  //
-
-  // var dialog = document.querySelector('.dialog');
   var featuresContainer = newDialogElement.querySelector('.lodge__features');
   var dialogClose = newDialogElement.querySelector('.dialog__close');
   var dialogCloseHandler;
