@@ -145,9 +145,11 @@ window.initializePins = (function () {
     // window.load(URL, onLoad);
 
     // Грузим данные, отрисовываем pins
-    window.load(URL, function (data) {
+    var onLoad = function (data) {
       renderPins(data);
-    });
+    };
+
+    window.load(URL, onLoad);
 
     // Добавляем обработчики для действий с pins
     // pinsMap.addEventListener('click', pinsMapHandler);
