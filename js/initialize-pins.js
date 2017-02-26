@@ -3,9 +3,11 @@
 window.initializePins = (function () {
   return function () {
     var pinsMap = document.querySelector('.tokyo__pin-map');
+    var pinsFilters = document.querySelector('.tokyo__filters');
     var pinClicked;
     var URL = 'https://intensive-javascript-server-pedmyactpq.now.sh/keksobooking/data';
     var dataFromServer = [];
+    var filteredPins;
 
     // Добавляем активный класс к пину
     var highlightPin = function (pin) {
@@ -46,6 +48,7 @@ window.initializePins = (function () {
       };
     };
 
+    // Создаем pin
     var createPin = (function () {
       var pinTemplate = document.querySelector('#pin-template');
       var pinToClone = pinTemplate.content.querySelector('.pin');
@@ -77,6 +80,23 @@ window.initializePins = (function () {
         return pinNew;
       };
     })();
+
+    // Функция которая кладит отфильтрованные pins, удаляет те что были на странице
+    // и рендерит новые
+    var filtersFormHandler = function () {
+      filteredPins = window.filterPins(dataFromServer);
+      removeRenderedPins();
+      renderPins(filteredPins);
+    };
+
+    var removeRenderedPins = function () {
+      var pins = pinsMap.querySelectorAll('.pin');
+      for (var i = 1; i < pins.length; i++) {
+        pinsMap.removeChild(pins[i]);
+      }
+    };
+
+    pinsFilters.addEventListener('change', filtersFormHandler);
 
     // Рендерим pins
     var renderPins = function (data) {
