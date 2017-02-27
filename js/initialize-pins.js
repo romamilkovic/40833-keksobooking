@@ -29,7 +29,7 @@ window.initializePins = (function () {
       deactivatePins();
       var openFromKeyboard = typeof event.keyCode !== 'undefined';
 
-      pinClicked = event.target.closest('.pin');
+      pinClicked = event.currentTarget;
 
       if (pinClicked) {
         highlightPin(pinClicked);
@@ -109,9 +109,9 @@ window.initializePins = (function () {
     // Грузим данные, отрисовываем pins
     var onLoad = function (data) {
       dataFromServer = data;
-      var initialData = dataFromServer.slice(0, 3);
+      var threeRandomPins = window.utils.getRandomElements(dataFromServer, 3);
 
-      renderPins(initialData);
+      renderPins(threeRandomPins);
     };
 
     window.load(URL, onLoad);

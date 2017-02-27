@@ -16,9 +16,25 @@ window.utils = (function () {
     return typeof checkFunction === 'function';
   };
 
+  var getRandomElements = function (array, number) {
+    var result = new Array(number);
+    var length = array.length;
+    var taken = new Array(length);
+    if (number > length) {
+      throw new RangeError('getRandomElements: more elements taken than available in array');
+    }
+    while (number--) {
+      var random = Math.floor(Math.random() * length);
+      result[number] = array[random in taken ? taken[random] : random];
+      taken[random] = --length;
+    }
+    return result;
+  };
+
   return {
     isKeyEnter: isKeyEnter,
     isKeyEsc: isKeyEsc,
-    isFunction: isFunction
+    isFunction: isFunction,
+    getRandomElements: getRandomElements
   };
 })();

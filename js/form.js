@@ -1,7 +1,6 @@
 'use strict';
 
 window.form = (function () {
-
   var form = document.querySelector('.notice__form');
   var title = form.querySelector('#title');
   var price = form.querySelector('#price');

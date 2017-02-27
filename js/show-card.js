@@ -61,27 +61,33 @@ window.showCard = (function () {
   var dialogCloseOnEscEventListener = function (event) {
     if (window.utils.isKeyEsc(event)) {
       closeDialog();
+      removeEventListeners();
     }
   };
 
   var dialogCloseOnClickEventListener = function () {
     closeDialog();
+    removeEventListeners();
   };
 
   var dialogCloseOnEnterEventListener = function () {
     if (window.utils.isKeyEnter(event)) {
       closeDialog();
+      removeEventListeners();
     }
   };
 
-  // Обработчик события закрытия окна по нажатию на ESC
-  document.addEventListener('keydown', dialogCloseOnEscEventListener);
+  function addEventListeners() {
+    dialogClose.addEventListener('click', dialogCloseOnClickEventListener);
+    dialogClose.addEventListener('keydown', dialogCloseOnEnterEventListener);
+    document.addEventListener('keydown', dialogCloseOnEscEventListener);
+  }
 
-  // Обработчик события закрытия окна по клику на крестик
-  dialogClose.addEventListener('click', dialogCloseOnClickEventListener);
-
-  // Обработчик события закрытия окна по нажатию на ENTER по крестику
-  dialogClose.addEventListener('keydown', dialogCloseOnEnterEventListener);
+  function removeEventListeners() {
+    dialogClose.removeEventListener('click', dialogCloseOnClickEventListener);
+    dialogClose.removeEventListener('keydown', dialogCloseOnEnterEventListener);
+    document.removeEventListener('keydown', dialogCloseOnEscEventListener);
+  }
 
   return function (callback, data) {
     newDialogElement.style.display = 'block';
@@ -90,5 +96,7 @@ window.showCard = (function () {
     dialogCloseHandler = callback;
 
     renderDialog(data);
+
+    addEventListeners();
   };
 })();
